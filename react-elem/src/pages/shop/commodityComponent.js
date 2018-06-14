@@ -22,10 +22,53 @@ export default class Index extends Component {
   currentScroll = 0; // tab scroll
   currentMainScroll = 0; // 主体
   componentDidMount() {
-    //   this.scrollTogether = this.scrollTogether.bind(this);
-    // this.main.addEventListener('scroll',this.scrollTogether);
+    this.scrollTogether = this.scrollTogether.bind(this);
+    this.main.addEventListener("scroll", this.scrollTogether);
+    this._getHandleClient = this._getHandleClient.bind(this);
+    this.main.addEventListener("touchstart", this._getHandleClient);
   }
-  scrollTogether() {}
+  _getHandleClient() {
+    this.currentScroll = this.main.scrollTop;
+    // this.currentMainScroll = document.querySelector(".scrollMain").scrollTop;
+  }
+  scrollTogether() {
+    // document.querySelector(".scrollMain").scrollTop =
+    //   this.currentMainScroll + (this.main.scrollTop - this.currentScroll);
+    this.posCalc(this.listHeight, this.main.scrollTop);
+  }
+  posCalc(pos, y) {
+    if (pos.length < 2) {
+      //只有一个分类返回当前位置
+      this._run(pos[0].index);
+      return;
+    }
+    let prevArr = pos.slice(0, parseInt(pos.length / 2, 10));
+    let nextArr = pos.slice(parseInt(pos.length / 2, 10));
+    let prevArrIndex = prevArr[prevArr.length - 1];
+    let nextArrIndex = nextArr[0];
+    if (prevArrIndex.pos > Math.abs(y)) {
+      this.posCalc(prevArr, y);
+      return;
+    } else if (nextArrIndex.pos < Math.abs(y)) {
+      this.posCalc(nextArr, y);
+      return;
+    } else if (
+      prevArrIndex.pos <= Math.abs(y) &&
+      nextArrIndex.pos > Math.abs(y)
+    ) {
+      if (prevArrIndex.index === this.state.current) {
+        return;
+      }
+      this.setState({
+        current: prevArrIndex.index
+      });
+      return;
+    }
+  }
+  componentWillUnmount() {
+    this.main.removeEventListener("scroll", this._scrollTogether);
+    this.main.removeEventListener("touchstart", this._getHandleClient);
+  }
   componentDidUpdate() {
     if (this.props.data.length) {
       this.computeListHeight();

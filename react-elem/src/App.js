@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { BrowserRouter, Route, Switch, history } from "react-router-dom";
 import "./app1.scss";
-
+import Footr from "./components/footer";
 import Index from "./pages/index/index";
 import Shop from "./pages/shop/shop";
 class App extends Component {
@@ -12,6 +12,7 @@ class App extends Component {
           <Route exact path="/" component={Index} />
           <Switch>
             <Route path="/shop/:geohash/:id" component={Shop} />
+            <Footr />
           </Switch>
         </div>
       </BrowserRouter>
